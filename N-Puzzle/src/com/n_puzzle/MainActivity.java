@@ -11,6 +11,22 @@ public class MainActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		if (findViewById(R.id.board) != null) {
+
+			// However, if we're being restored from a previous state,
+			// then we don't need to do anything and should return or else
+			// we could end up with overlapping fragments.
+			if (savedInstanceState != null) {
+				return;
+			}
+
+			// Create an instance of Fragment
+			Board board = Board.newInstance(3);
+
+			getSupportFragmentManager().beginTransaction()
+					.add(R.id.board, board).commit();
+		}
 	}
 
 	@Override
@@ -18,6 +34,7 @@ public class MainActivity extends ActionBarActivity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+
 	}
 
 	@Override

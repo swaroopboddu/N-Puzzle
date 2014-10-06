@@ -1,17 +1,17 @@
 package com.n_puzzle.game;
 
 public class Square {
-	
+
 	@Override
 	public String toString() {
-		if(isBlank)
+		if (isBlank)
 			return "";
-		return correctPosition+"";
+		return correctPosition + "";
 	}
 
-	int correctPosition;
-	boolean isBlank;
-	
+	private int correctPosition;
+	private boolean isBlank;
+
 	public Square(int correctPosition, boolean isBlank) {
 		super();
 		this.correctPosition = correctPosition;
@@ -55,7 +55,5 @@ public class Square {
 	public void setCorrectPosition(int correctPosition) {
 		this.correctPosition = correctPosition;
 	}
-	
-	
 
 }

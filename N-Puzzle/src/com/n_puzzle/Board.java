@@ -1,5 +1,6 @@
 package com.n_puzzle;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.Gravity;
@@ -22,12 +23,14 @@ import com.n_puzzle.game.Square;
  * 
  */
 public class Board extends Fragment {
-	
+
 	private static final String ARG_SIZE = "size";
-	
+	private CounterUpdaterActivity mActivity;
 	private int size;
 	private GameUtil game;
-	
+	private ArrayAdapter<Square> adapter;
+	private GridView grid ;
+
 	/**
 	 * Use this factory method to create a new instance of this fragment using
 	 * the provided parameters.
@@ -47,6 +50,18 @@ public class Board extends Fragment {
 		return fragment;
 	}
 
+	@Override
+	public void onAttach(Activity activity) {
+		if(activity instanceof CounterUpdaterActivity)
+			mActivity = (CounterUpdaterActivity) activity;
+		super.onAttach(activity);
+	}
+	
+	@Override
+	public void onDetach() {
+		mActivity = null;
+		super.onDetach();
+	}
 	public Board() {
 		// Required empty public constructor
 	}
@@ -63,40 +78,59 @@ public class Board extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		GridView grid = new GridView(getActivity());
+		grid = new GridView(getActivity());
 		grid.setId(1);
-		
+		grid.setPadding(16, 16, 16, 16);
+		grid.setHorizontalSpacing(16);
+		grid.setVerticalSpacing(16);
 		grid.setNumColumns(size);
-	
+
 		grid.setGravity(Gravity.CENTER);
-		
-		final ArrayAdapter<Square> adapter = new ArrayAdapter<Square>(getActivity(),
-				R.layout.square, game.getList());
+
+		adapter = new ArrayAdapter<Square>(
+				getActivity(), R.layout.square, game.getList());
 		grid.setAdapter(adapter);
-		
+
 		grid.setOnItemClickListener(new OnItemClickListener() {
 
+			
+
 			@Override
-			public void onItemClick(AdapterView<?> parent, View v, int position,
-					long id) {
-				if(game.swap(position))
-				{
+			public void onItemClick(AdapterView<?> parent, View v,
+					int position, long id) {
+				if (game.swap(position)) {
 					adapter.clear();
 					adapter.addAll(game.getList());
 					adapter.notifyDataSetChanged();
+					if(mActivity!=null){
+					mActivity.updateCount(game.getNumberOfMoves());
+					if(game.isGameOver())
+					{
+						mActivity.gameOver();
+					}
+					}
 				}
 			}
 		});
-		
+
 		return grid;
 	}
-
 	
+	public interface CounterUpdaterActivity
+	{
+		public void updateCount(int count);
+		public void gameOver();
+	}
 
-	
-
-	
-
-	
+	public void reset() {
+		if(game.isGameOver())
+			size = size++;
+		game = new GameUtil(size);
+		adapter.clear();
+		adapter.addAll(game.getList());
+		grid.setNumColumns(size);
+		adapter.notifyDataSetChanged();
+		mActivity.updateCount(game.getNumberOfMoves());
+	}
 
 }

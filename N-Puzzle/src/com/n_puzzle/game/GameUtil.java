@@ -5,59 +5,78 @@ import java.util.Collections;
 import java.util.List;
 
 public class GameUtil {
-	
+
 	private List<Square> list;
 	private int size;
-	public GameUtil(int size)
-	{
-		this.size =size;
-		int totalSize = size*size;
+	private int numberOfMoves;
+
+	public GameUtil(int size) {
+		this.size = size;
+		int totalSize = size * size;
 		list = new ArrayList<Square>(totalSize);
-		for(int i=totalSize-1;i>0;i--)
-		{
-			list.add(new Square(i,false));
+		for (int i = totalSize - 1; i > 0; i--) {
+			list.add(new Square(i, false));
 		}
-		if(totalSize%2==0)
-		{
-			Square last = list.get(totalSize-2);
-			list.set(totalSize-2, list.get(totalSize-3));
-			list.set(totalSize-3,last);
+		if (totalSize % 2 == 0) {
+			Square last = list.get(totalSize - 2);
+			list.set(totalSize - 2, list.get(totalSize - 3));
+			list.set(totalSize - 3, last);
 		}
-		list.add(new Square(totalSize,true));
+		list.add(new Square(totalSize, true));
+		numberOfMoves = 0;
 	}
-	
-	public boolean swap(int position)
-	{
-		int row = (position)/size;
-		int col = (position)%size;
-		//check right
-		if(col!=size-1 && list.get(position+1).isBlank())
-		{
-			Collections.swap(this.list,position,position+1);
-			return true;
+
+	public boolean isGameOver() {
+		for (int i = 0; i < list.size(); i++) {
+			if (i + 1 != list.get(i).getCorrectPosition())
+				return false;
 		}
-		//move left
-		else if(col!=0 && list.get(position-1).isBlank())
-		{
-			Collections.swap(this.list,position,position-1);
-			return true;
-		}
+
+		return true;
+	}
+
+	public boolean swap(int position) {
+		if(list.get(position).isBlank())
+			return false;
+		int row = (position) / size;
+		int col = (position) % size;
 		
-		//move up
-		else if(row!=0 && list.get((row-1)*size+col).isBlank())
-		{
-			Collections.swap(this.list,position,(row-1)*size+col);
+		// check right
+		if (col != size - 1 && list.get(position + 1).isBlank()) {
+			Collections.swap(this.list, position, position + 1);
+			numberOfMoves++;
 			return true;
 		}
-		
-		//move down
-		else if(row!=size-1 && list.get((row+1)*size+col).isBlank())
-		{
-			Collections.swap(this.list,position,(row+1)*size+col);
+		// move left
+		else if (col != 0 && list.get(position - 1).isBlank()) {
+			Collections.swap(this.list, position, position - 1);
+			numberOfMoves++;
+			return true;
+		}
+
+		// move up
+		else if (row != 0 && list.get((row - 1) * size + col).isBlank()) {
+			Collections.swap(this.list, position, (row - 1) * size + col);
+			numberOfMoves++;
+			return true;
+		}
+
+		// move down
+		else if (row != size - 1 && list.get((row + 1) * size + col).isBlank()) {
+			Collections.swap(this.list, position, (row + 1) * size + col);
+			numberOfMoves++;
 			return true;
 		}
 		return false;
-		
+
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public int getNumberOfMoves() {
+		return numberOfMoves;
 	}
 
 	public List<Square> getList() {
@@ -67,9 +86,5 @@ public class GameUtil {
 	public void setList(List<Square> list) {
 		this.list = list;
 	}
-
-	
-	
-	
 
 }

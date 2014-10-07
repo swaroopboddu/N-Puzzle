@@ -124,7 +124,7 @@ public class Board extends Fragment {
 
 	public void reset() {
 		if(game.isGameOver())
-			size = size++;
+			size++;
 		game = new GameUtil(size);
 		adapter.clear();
 		adapter.addAll(game.getList());

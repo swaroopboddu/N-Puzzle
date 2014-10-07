@@ -98,8 +98,7 @@ public class MainActivity extends ActionBarActivity implements Board.CounterUpda
         public void run() {
             if(textView != null) {
                 textView.setText(""+ count);
-                count++;
-
+                
                 if(handler != null && count < LIMIT) {
                     handler.postDelayed(this, 3000);
                 }

@@ -12,6 +12,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 
+import com.n_puzzle.bitmap.BitMapUtil;
 import com.n_puzzle.game.GameUtil;
 import com.n_puzzle.game.Square;
 
@@ -29,7 +30,7 @@ public class Board extends Fragment {
 	private int size;
 	private GameUtil game;
 	private ArrayAdapter<Square> adapter;
-	private GridView grid ;
+	private GridView grid;
 
 	/**
 	 * Use this factory method to create a new instance of this fragment using
@@ -52,16 +53,17 @@ public class Board extends Fragment {
 
 	@Override
 	public void onAttach(Activity activity) {
-		if(activity instanceof CounterUpdaterActivity)
+		if (activity instanceof CounterUpdaterActivity)
 			mActivity = (CounterUpdaterActivity) activity;
 		super.onAttach(activity);
 	}
-	
+
 	@Override
 	public void onDetach() {
 		mActivity = null;
 		super.onDetach();
 	}
+
 	public Board() {
 		// Required empty public constructor
 	}
@@ -71,7 +73,10 @@ public class Board extends Fragment {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
 			size = getArguments().getInt(ARG_SIZE);
-			game = new GameUtil(size);
+			game = new GameUtil(size, BitMapUtil.getCroppedImages(
+					getResources(), R.drawable.ash, getResources()
+							.getDisplayMetrics().widthPixels, getResources()
+							.getDisplayMetrics().heightPixels/2, size));
 		}
 	}
 
@@ -81,19 +86,18 @@ public class Board extends Fragment {
 		grid = new GridView(getActivity());
 		grid.setId(1);
 		grid.setPadding(16, 16, 16, 16);
-		grid.setHorizontalSpacing(16);
-		grid.setVerticalSpacing(16);
+		grid.setHorizontalSpacing(0);
+		grid.setVerticalSpacing(0);
+
 		grid.setNumColumns(size);
 
 		grid.setGravity(Gravity.CENTER);
-
-		adapter = new ArrayAdapter<Square>(
-				getActivity(), R.layout.square, game.getList());
+		
+		adapter = new CustomArrayAdapter(getActivity(), R.layout.square,
+				game.getList());
 		grid.setAdapter(adapter);
 
 		grid.setOnItemClickListener(new OnItemClickListener() {
-
-			
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v,
@@ -102,12 +106,11 @@ public class Board extends Fragment {
 					adapter.clear();
 					adapter.addAll(game.getList());
 					adapter.notifyDataSetChanged();
-					if(mActivity!=null){
-					mActivity.updateCount(game.getNumberOfMoves());
-					if(game.isGameOver())
-					{
-						mActivity.gameOver();
-					}
+					if (mActivity != null) {
+						mActivity.updateCount(game.getNumberOfMoves());
+						if (game.isGameOver()) {
+							mActivity.gameOver();
+						}
 					}
 				}
 			}
@@ -115,17 +118,20 @@ public class Board extends Fragment {
 
 		return grid;
 	}
-	
-	public interface CounterUpdaterActivity
-	{
+
+	public interface CounterUpdaterActivity {
 		public void updateCount(int count);
+
 		public void gameOver();
 	}
 
 	public void reset() {
-		if(game.isGameOver())
+		if (game.isGameOver())
 			size++;
-		game = new GameUtil(size);
+		game = new GameUtil(size, BitMapUtil.getCroppedImages(getResources(),
+				R.drawable.ash,
+				getResources().getDisplayMetrics().widthPixels, getResources()
+						.getDisplayMetrics().heightPixels/2, size));
 		adapter.clear();
 		adapter.addAll(game.getList());
 		grid.setNumColumns(size);

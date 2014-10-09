@@ -1,5 +1,7 @@
 package com.n_puzzle.game;
 
+import android.graphics.Bitmap;
+
 public class Square {
 
 	@Override
@@ -11,11 +13,21 @@ public class Square {
 
 	private int correctPosition;
 	private boolean isBlank;
+	private Bitmap croppedImage;
 
-	public Square(int correctPosition, boolean isBlank) {
+	public Bitmap getCroppedImage() {
+		return croppedImage;
+	}
+
+	public void setCroppedImage(Bitmap croppedImage) {
+		this.croppedImage = croppedImage;
+	}
+
+	public Square(int correctPosition, Bitmap image ,boolean isBlank) {
 		super();
 		this.correctPosition = correctPosition;
 		this.isBlank = isBlank;
+		this.croppedImage = image;
 	}
 
 	public boolean isBlank() {

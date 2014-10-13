@@ -2,7 +2,7 @@ package com.n_puzzle;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +10,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import com.n_puzzle.bitmap.BitMapUtil;
 import com.n_puzzle.game.GameUtil;
@@ -26,7 +28,6 @@ import com.n_puzzle.game.Square;
 public class Board extends Fragment {
 
 	private static final String ARG_SIZE = "size";
-	private CounterUpdaterActivity mActivity;
 	private int size;
 	private GameUtil game;
 	private ArrayAdapter<Square> adapter;
@@ -43,8 +44,8 @@ public class Board extends Fragment {
 	 * @return A new instance of fragment Board.
 	 */
 	// TODO: Rename and change types and number of parameters
-	public static Board newInstance(int size) {
-		Board fragment = new Board();
+	public static Fragment newInstance(int size) {
+		Fragment fragment = new Board();
 		Bundle args = new Bundle();
 		args.putInt(ARG_SIZE, size);
 		fragment.setArguments(args);
@@ -53,14 +54,12 @@ public class Board extends Fragment {
 
 	@Override
 	public void onAttach(Activity activity) {
-		if (activity instanceof CounterUpdaterActivity)
-			mActivity = (CounterUpdaterActivity) activity;
+
 		super.onAttach(activity);
 	}
 
 	@Override
 	public void onDetach() {
-		mActivity = null;
 		super.onDetach();
 	}
 
@@ -76,27 +75,31 @@ public class Board extends Fragment {
 			game = new GameUtil(size, BitMapUtil.getCroppedImages(
 					getResources(), R.drawable.ash, getResources()
 							.getDisplayMetrics().widthPixels, getResources()
-							.getDisplayMetrics().heightPixels/2, size));
+							.getDisplayMetrics().heightPixels / 2, size));
 		}
 	}
+
+	private TextView result;
+	private TextView count;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		grid = new GridView(getActivity());
+		View v = inflater.inflate(R.layout.fragment_board, container, false);
+
+		grid = (GridView) v.findViewById(R.id.board2);
+		result = (TextView) v.findViewById(R.id.result_label2);
+		count = (TextView) v.findViewById(R.id.count2);
+
 		grid.setId(1);
 		grid.setPadding(16, 16, 16, 16);
 		grid.setHorizontalSpacing(0);
 		grid.setVerticalSpacing(0);
-
 		grid.setNumColumns(size);
-
 		grid.setGravity(Gravity.CENTER);
-		
 		adapter = new CustomArrayAdapter(getActivity(), R.layout.square,
 				game.getList());
 		grid.setAdapter(adapter);
-
 		grid.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -106,17 +109,24 @@ public class Board extends Fragment {
 					adapter.clear();
 					adapter.addAll(game.getList());
 					adapter.notifyDataSetChanged();
-					if (mActivity != null) {
-						mActivity.updateCount(game.getNumberOfMoves());
-						if (game.isGameOver()) {
-							mActivity.gameOver();
-						}
+					count.setText(game.getNumberOfMoves() + "");
+
+					if (game.isGameOver()) {
+						result.setText("Congrats!! You completed the puzzle");
 					}
 				}
 			}
 		});
 
-		return grid;
+		Button button = (Button) v.findViewById(R.id.reset2);
+		button.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				reset();
+				result.setText("");
+			}
+		});
+
+		return v;
 	}
 
 	public interface CounterUpdaterActivity {
@@ -129,14 +139,13 @@ public class Board extends Fragment {
 		if (game.isGameOver())
 			size++;
 		game = new GameUtil(size, BitMapUtil.getCroppedImages(getResources(),
-				R.drawable.ash,
-				getResources().getDisplayMetrics().widthPixels, getResources()
-						.getDisplayMetrics().heightPixels/2, size));
+				R.drawable.ash, getResources().getDisplayMetrics().widthPixels,
+				getResources().getDisplayMetrics().heightPixels / 2, size));
 		adapter.clear();
 		adapter.addAll(game.getList());
 		grid.setNumColumns(size);
 		adapter.notifyDataSetChanged();
-		mActivity.updateCount(game.getNumberOfMoves());
+		count.setText(game.getNumberOfMoves() + "");
 	}
 
 }

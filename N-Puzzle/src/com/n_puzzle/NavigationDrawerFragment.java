@@ -6,10 +6,15 @@ import android.app.Fragment;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -58,6 +63,8 @@ public class NavigationDrawerFragment extends Fragment {
 	private int mCurrentSelectedPosition = 0;
 	private boolean mFromSavedInstanceState;
 	private boolean mUserLearnedDrawer;
+
+	private static final int PICKER = 1;
 
 	public NavigationDrawerFragment() {
 	}
@@ -272,13 +279,48 @@ public class NavigationDrawerFragment extends Fragment {
 			return true;
 		}
 
-		if (item.getItemId() == R.id.action_example) {
+		if (item.getItemId() == R.id.action_change_image) {
 			Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT)
 					.show();
+			Intent pickIntent = new Intent();
+			pickIntent.setType("image/*");
+			pickIntent.setAction(Intent.ACTION_GET_CONTENT);
+			// we will handle the returned data in onActivityResult
+			startActivityForResult(
+					Intent.createChooser(pickIntent, "Select Picture"), PICKER);
 			return true;
 		}
 
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// Check which request we're responding to
+		if (requestCode == PICKER) {
+			// Make sure the request was successful
+			if (resultCode == Activity.RESULT_OK) {
+				Uri imageUri = data.getData();
+				String[] medData = { MediaStore.Images.Media.DATA };
+				// query the data
+				Cursor picCursor = getActivity().getContentResolver().query(
+						imageUri, medData, null, null, null);
+				String imgPath;
+				if (picCursor != null) {
+					// get the path string
+					int index = picCursor
+							.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+					picCursor.moveToFirst();
+					imgPath = picCursor.getString(index);
+				} else
+					imgPath = imageUri.getPath();
+				SharedPreferences sharedPref = getActivity().getPreferences(
+						Context.MODE_PRIVATE);
+				SharedPreferences.Editor editor = sharedPref.edit();
+				editor.putString(getString(R.string.path), imgPath);
+				editor.commit();
+			}
+		}
 	}
 
 	/**

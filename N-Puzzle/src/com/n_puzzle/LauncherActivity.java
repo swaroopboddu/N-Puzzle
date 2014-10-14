@@ -6,6 +6,7 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -27,6 +28,7 @@ public class LauncherActivity extends Activity implements
 	 */
 	private Board board;
 	private NavigationDrawerFragment mNavigationDrawerFragment;
+	private Gallery gallery;
 
 	/**
 	 * Used to store the last screen title. For use in
@@ -52,20 +54,20 @@ public class LauncherActivity extends Activity implements
 	public void onNavigationDrawerItemSelected(int position) {
 		// update the main content by replacing fragments
 		FragmentManager fragmentManager = getFragmentManager();
-		
-			fragmentManager
-					.beginTransaction()
-					.replace(R.id.container,
-							PlaceholderFragment.newInstance(position + 1))
-					.commit();
-		
+
+		fragmentManager
+				.beginTransaction()
+				.replace(R.id.container,
+						PlaceholderFragment.newInstance(position + 1)).commit();
+
 	}
 
 	public void onSectionAttached(int number) {
 		FragmentManager fragmentManager = getFragmentManager();
 		switch (number) {
 		case 1:
-			board = (Board) Board.newInstance(3);
+			if (board == null)
+				board = (Board) Board.newInstance(3);
 			fragmentManager.beginTransaction().replace(R.id.container, board)
 					.commit();
 			mTitle = getString(R.string.title_start_game);
@@ -74,6 +76,11 @@ public class LauncherActivity extends Activity implements
 			mTitle = getString(R.string.title_user_information);
 			break;
 		case 3:
+			SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+			String path = sharedPref.getString(getString(R.string.path), "");
+			gallery = Gallery.newInstance(path);
+			fragmentManager.beginTransaction().replace(R.id.container, gallery)
+			.commit();
 			mTitle = getString(R.string.title_select_image);
 			break;
 		case 4:

@@ -9,6 +9,7 @@
     <string name="reset_button">Reset</string>
     <string name="status">Status</string>
     <string name="description">description</string>
+    <string name="path">path</string>
 
     <style name="ButtonText">
         <item name="android:layout_width">fill_parent</item>
@@ -31,6 +32,6 @@
     <string name="title_stats">Statistics</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="action_example">Example action</string>
+    <string name="action_image">Choose Image</string>
 
 </resources>

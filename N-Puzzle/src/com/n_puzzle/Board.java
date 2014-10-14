@@ -3,6 +3,8 @@ package com.n_puzzle;
 import android.app.Activity;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +34,7 @@ public class Board extends Fragment {
 	private GameUtil game;
 	private ArrayAdapter<Square> adapter;
 	private GridView grid;
+	private String path;
 
 	/**
 	 * Use this factory method to create a new instance of this fragment using
@@ -71,12 +74,26 @@ public class Board extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
+
 			size = getArguments().getInt(ARG_SIZE);
+			setGame();
+		}
+	}
+
+	private void setGame() {
+		SharedPreferences sharedPref = getActivity().getPreferences(
+				Context.MODE_PRIVATE);
+		path = sharedPref.getString(getString(R.string.path), "");
+		if (path.isEmpty())
 			game = new GameUtil(size, BitMapUtil.getCroppedImages(
 					getResources(), R.drawable.ash, getResources()
 							.getDisplayMetrics().widthPixels, getResources()
 							.getDisplayMetrics().heightPixels / 2, size));
-		}
+		else
+			game = new GameUtil(size, BitMapUtil.getCroppedImages(
+					getResources(), path,
+					getResources().getDisplayMetrics().widthPixels,
+					getResources().getDisplayMetrics().heightPixels / 2, size));
 	}
 
 	private TextView result;
@@ -138,9 +155,7 @@ public class Board extends Fragment {
 	public void reset() {
 		if (game.isGameOver())
 			size++;
-		game = new GameUtil(size, BitMapUtil.getCroppedImages(getResources(),
-				R.drawable.ash, getResources().getDisplayMetrics().widthPixels,
-				getResources().getDisplayMetrics().heightPixels / 2, size));
+		setGame();
 		adapter.clear();
 		adapter.addAll(game.getList());
 		grid.setNumColumns(size);

@@ -30,13 +30,13 @@ public class BitMapUtil {
 
 	public static Bitmap lessResolution(Resources resource, int id, int width,
 			int height) {
-		int reqHeight = width;
-		int reqWidth = height;
+		int reqHeight = height;
+		int reqWidth = width;
 		BitmapFactory.Options options = new BitmapFactory.Options();
 
 		// First decode with inJustDecodeBounds=true to check dimensions
 		options.inJustDecodeBounds = true;
-		BitmapFactory.decodeResource(resource, reqWidth, options);
+		BitmapFactory.decodeResource(resource, id, options);
 
 		// Calculate inSampleSize
 		options.inSampleSize = calculateInSampleSize(options, reqWidth,
@@ -56,7 +56,7 @@ public class BitMapUtil {
 
 		// First decode with inJustDecodeBounds=true to check dimensions
 		options.inJustDecodeBounds = true;
-		BitmapFactory.decodeResource(resource, reqWidth, options);
+		BitmapFactory.decodeFile(path, options);
 
 		// Calculate inSampleSize
 		options.inSampleSize = calculateInSampleSize(options, reqWidth,
@@ -87,7 +87,7 @@ public class BitMapUtil {
 			// guarantee
 			// a final image with both dimensions larger than or equal to the
 			// requested height and width.
-			inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+			inSampleSize = heightRatio < widthRatio ?  widthRatio:heightRatio;
 		}
 		return inSampleSize;
 	}

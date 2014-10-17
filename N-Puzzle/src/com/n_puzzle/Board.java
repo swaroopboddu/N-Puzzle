@@ -1,11 +1,10 @@
 package com.n_puzzle;
 
 import android.app.Activity;
-import android.os.Bundle;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.view.Gravity;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,9 +73,9 @@ public class Board extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
-
 			size = getArguments().getInt(ARG_SIZE);
 			setGame();
+
 		}
 	}
 
@@ -84,16 +83,19 @@ public class Board extends Fragment {
 		SharedPreferences sharedPref = getActivity().getPreferences(
 				Context.MODE_PRIVATE);
 		path = sharedPref.getString(getString(R.string.path), "");
-		if (path.isEmpty())
+		int width = getResources().getDisplayMetrics().widthPixels;
+		int height = getResources().getDisplayMetrics().heightPixels / 2;
+		
+
+		if (path.isEmpty()) {
 			game = new GameUtil(size, BitMapUtil.getCroppedImages(
-					getResources(), R.drawable.ash, getResources()
-							.getDisplayMetrics().widthPixels, getResources()
-							.getDisplayMetrics().heightPixels / 2, size));
-		else
+					getResources(), R.drawable.ash, width, height, size));
+
+		} else {
 			game = new GameUtil(size, BitMapUtil.getCroppedImages(
-					getResources(), path,
-					getResources().getDisplayMetrics().widthPixels,
-					getResources().getDisplayMetrics().heightPixels / 2, size));
+					getResources(), path, width, height, size));
+
+		}
 	}
 
 	private TextView result;
@@ -109,14 +111,12 @@ public class Board extends Fragment {
 		count = (TextView) v.findViewById(R.id.count2);
 
 		grid.setId(1);
-		grid.setPadding(16, 16, 16, 16);
-		grid.setHorizontalSpacing(0);
-		grid.setVerticalSpacing(0);
 		grid.setNumColumns(size);
-		grid.setGravity(Gravity.CENTER);
 		adapter = new CustomArrayAdapter(getActivity(), R.layout.square,
 				game.getList());
 		grid.setAdapter(adapter);
+		grid.setColumnWidth(game.getWidth() / size);
+
 		grid.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -159,6 +159,7 @@ public class Board extends Fragment {
 		adapter.clear();
 		adapter.addAll(game.getList());
 		grid.setNumColumns(size);
+		grid.setColumnWidth(game.getWidth()/size);
 		adapter.notifyDataSetChanged();
 		count.setText(game.getNumberOfMoves() + "");
 	}

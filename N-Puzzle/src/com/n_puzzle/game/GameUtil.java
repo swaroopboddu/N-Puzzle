@@ -17,8 +17,8 @@ public class GameUtil {
 		int totalSize = size * size;
 
 		list = new ArrayList<Square>(totalSize);
-		for (int i = totalSize -1; i > 0; i--) {
-			list.add(new Square(i, images[i-1], false));
+		for (int i = totalSize - 1; i > 0; i--) {
+			list.add(new Square(i, images[i - 1], false));
 		}
 		if (totalSize % 2 == 0) {
 			Square last = list.get(totalSize - 2);
@@ -88,6 +88,22 @@ public class GameUtil {
 
 	public void setList(List<Square> list) {
 		this.list = list;
+	}
+
+	public int getWidth() {
+		int width = 0;
+		for (int i = 0; i < size; i++) {
+			width = width + list.get(i).getCroppedImage().getWidth();
+		}
+		return width;
+	}
+	
+	public int getHeight() {
+		int height = 0;
+		for (int i = 0; i < size; i++) {
+			height = height + list.get(i).getCroppedImage().getHeight();
+		}
+		return height;
 	}
 
 }

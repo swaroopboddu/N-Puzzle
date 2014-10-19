@@ -10,6 +10,9 @@
     <string name="status">Status</string>
     <string name="description">description</string>
     <string name="path">path</string>
+    <string name="total_games">Total Games</string>
+    <string name="total_games_own">Games Own</string>
+    <string name="average_moves">Average Moves</string>
 
     <style name="ButtonText">
         <item name="android:layout_width">fill_parent</item>

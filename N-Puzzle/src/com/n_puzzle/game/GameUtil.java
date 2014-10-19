@@ -11,8 +11,13 @@ public class GameUtil {
 	private List<Square> list;
 	private int size;
 	private int numberOfMoves;
+	private int numberOfGames;
+	private int numberOfOwn;
+	private double average;
+	private String name;
 
-	public GameUtil(int size, Bitmap[] images) {
+	public GameUtil(int size, Bitmap[] images, int games, int own,
+			double average) {
 		this.size = size;
 		int totalSize = size * size;
 
@@ -27,6 +32,49 @@ public class GameUtil {
 		}
 		list.add(new Square(totalSize, images[images.length - 1], true));
 		numberOfMoves = 0;
+		numberOfGames = games;
+		numberOfOwn = own;
+		this.average = average;
+	}
+
+	public int getNumberOfGames() {
+		return numberOfGames;
+	}
+
+	public void setNumberOfGames(int numberOfGames) {
+		this.numberOfGames = numberOfGames;
+	}
+
+	public int getNumberOfOwn() {
+		return numberOfOwn;
+	}
+
+	public void setNumberOfOwn(int numberOfOwn) {
+		this.numberOfOwn = numberOfOwn;
+	}
+
+	public double getAverage() {
+		return average;
+	}
+
+	public void setAverage(double average) {
+		this.average = average;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+
+	public void setNumberOfMoves(int numberOfMoves) {
+		this.numberOfMoves = numberOfMoves;
 	}
 
 	public boolean isGameOver() {
@@ -35,6 +83,8 @@ public class GameUtil {
 				return false;
 		}
 
+		numberOfOwn++;
+		average = (average*(numberOfGames-1) + numberOfMoves) / numberOfGames;
 		return true;
 	}
 
@@ -97,7 +147,7 @@ public class GameUtil {
 		}
 		return width;
 	}
-	
+
 	public int getHeight() {
 		int height = 0;
 		for (int i = 0; i < size; i++) {

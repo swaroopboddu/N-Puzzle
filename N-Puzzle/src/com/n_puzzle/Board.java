@@ -29,6 +29,9 @@ import com.n_puzzle.game.Square;
 public class Board extends Fragment {
 
 	private static final String ARG_SIZE = "size";
+	public static final String ARG_NUM_GAMES = "num_games";
+	public static final String ARG_NUM_OWN = "num_own";
+	public static final String ARG_AVG = "average";
 	private int size;
 	private GameUtil game;
 	private ArrayAdapter<Square> adapter;
@@ -62,11 +65,28 @@ public class Board extends Fragment {
 
 	@Override
 	public void onDetach() {
+		save();
 		super.onDetach();
+	}
+
+	public void save() {
+		SharedPreferences sharedPref = getActivity().getPreferences(
+				Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putInt(ARG_NUM_GAMES, game.getNumberOfGames());
+		editor.putInt(ARG_NUM_OWN, game.getNumberOfOwn());
+		editor.putFloat(ARG_AVG, (float) game.getAverage());
+		editor.commit();
 	}
 
 	public Board() {
 		// Required empty public constructor
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+
+		super.onActivityCreated(savedInstanceState);
 	}
 
 	@Override
@@ -83,17 +103,21 @@ public class Board extends Fragment {
 		SharedPreferences sharedPref = getActivity().getPreferences(
 				Context.MODE_PRIVATE);
 		path = sharedPref.getString(getString(R.string.path), "");
+		double avg = sharedPref.getFloat(ARG_AVG, 0);
+		int numOfGames = sharedPref.getInt(ARG_NUM_GAMES, 0);
+		int numOfOwn = sharedPref.getInt(ARG_NUM_OWN, 0);
 		int width = getResources().getDisplayMetrics().widthPixels;
 		int height = getResources().getDisplayMetrics().heightPixels / 2;
-		
 
 		if (path.isEmpty()) {
 			game = new GameUtil(size, BitMapUtil.getCroppedImages(
-					getResources(), R.drawable.ash, width, height, size));
+					getResources(), R.drawable.ash, width, height, size),
+					numOfGames + 1, numOfOwn, avg);
 
 		} else {
 			game = new GameUtil(size, BitMapUtil.getCroppedImages(
-					getResources(), path, width, height, size));
+					getResources(), path, width, height, size), numOfGames + 1,
+					numOfOwn, avg);
 
 		}
 	}
@@ -153,13 +177,15 @@ public class Board extends Fragment {
 	}
 
 	public void reset() {
-		if (game.isGameOver())
+		if (game.isGameOver()) {
+			save();
 			size++;
+		}
 		setGame();
 		adapter.clear();
 		adapter.addAll(game.getList());
 		grid.setNumColumns(size);
-		grid.setColumnWidth(game.getWidth()/size);
+		grid.setColumnWidth(game.getWidth() / size);
 		adapter.notifyDataSetChanged();
 		count.setText(game.getNumberOfMoves() + "");
 	}

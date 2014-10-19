@@ -27,6 +27,7 @@ public class LauncherActivity extends Activity implements
 	 * navigation drawer.
 	 */
 	private Board board;
+	private Records record;
 	private NavigationDrawerFragment mNavigationDrawerFragment;
 	private Gallery gallery;
 
@@ -73,6 +74,10 @@ public class LauncherActivity extends Activity implements
 			mTitle = getString(R.string.title_start_game);
 			break;
 		case 2:
+			if (record == null)
+				record = (Records) Records.newInstance();
+			fragmentManager.beginTransaction().replace(R.id.container, record)
+					.commit();
 			mTitle = getString(R.string.title_user_information);
 			break;
 		case 3:
@@ -80,12 +85,10 @@ public class LauncherActivity extends Activity implements
 			String path = sharedPref.getString(getString(R.string.path), "");
 			gallery = Gallery.newInstance(path);
 			fragmentManager.beginTransaction().replace(R.id.container, gallery)
-			.commit();
+					.commit();
 			mTitle = getString(R.string.title_select_image);
 			break;
-		case 4:
-			mTitle = getString(R.string.title_stats);
-			break;
+
 		}
 	}
 

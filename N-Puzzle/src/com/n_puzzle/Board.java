@@ -92,11 +92,10 @@ public class Board extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (getArguments() != null) {
-			size = getArguments().getInt(ARG_SIZE);
-			setGame();
 
-		}
+		size = 3;
+		setGame();
+
 	}
 
 	private void setGame() {

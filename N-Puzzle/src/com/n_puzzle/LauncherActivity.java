@@ -1,23 +1,13 @@
 package com.n_puzzle;
 
-import android.app.Activity;
-
 import android.app.ActionBar;
-import android.app.Fragment;
+import android.app.Activity;
 import android.app.FragmentManager;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.Build;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 public class LauncherActivity extends Activity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -41,7 +31,17 @@ public class LauncherActivity extends Activity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_launcher);
-
+		FragmentManager fragmentManager = getFragmentManager();
+		board = (Board) fragmentManager.findFragmentById(R.id.fragment_board);
+		gallery = (Gallery) fragmentManager
+				.findFragmentById(R.id.fragment_gallery);
+		record = (Records) fragmentManager
+				.findFragmentById(R.id.fragment_profile);
+		FragmentTransaction trans = fragmentManager.beginTransaction();
+		trans.hide(gallery);
+		trans.hide(record);
+		trans.show(board);
+		trans.commit();
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
@@ -56,41 +56,53 @@ public class LauncherActivity extends Activity implements
 		// update the main content by replacing fragments
 		FragmentManager fragmentManager = getFragmentManager();
 
-		fragmentManager
-				.beginTransaction()
-				.replace(R.id.container,
-						PlaceholderFragment.newInstance(position + 1)).commit();
-
-	}
-
-	public void onSectionAttached(int number) {
-		FragmentManager fragmentManager = getFragmentManager();
-		switch (number) {
-		case 1:
-			if (board == null)
-				board = (Board) Board.newInstance(3);
-			fragmentManager.beginTransaction().replace(R.id.container, board)
-					.commit();
-			mTitle = getString(R.string.title_start_game);
-			break;
-		case 2:
-			if (record == null)
-				record = (Records) Records.newInstance();
-			fragmentManager.beginTransaction().replace(R.id.container, record)
-					.commit();
-			mTitle = getString(R.string.title_user_information);
-			break;
-		case 3:
-			SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-			String path = sharedPref.getString(getString(R.string.path), "");
-			gallery = Gallery.newInstance(path);
-			fragmentManager.beginTransaction().replace(R.id.container, gallery)
-					.commit();
-			mTitle = getString(R.string.title_select_image);
-			break;
-
+		FragmentTransaction trans = fragmentManager.beginTransaction();
+		if (gallery != null && record != null && board != null) {
+			switch (position) {
+			case 0:
+				mTitle = getString(R.string.title_start_game);
+				trans.hide(gallery);
+				trans.hide(record);
+				trans.show(board);
+				trans.commit();
+				break;
+			case 1:
+				mTitle = getString(R.string.title_user_information);
+				trans.hide(board);
+				trans.hide(gallery);
+				trans.show(record);
+				trans.commit();
+				break;
+			case 2:
+				mTitle = getString(R.string.title_select_image);
+				trans.hide(board);
+				trans.hide(record);
+				trans.show(gallery);
+				trans.commit();
+				break;
+			}
 		}
+
 	}
+
+	/*
+	 * public void onSectionAttached(int number) { FragmentManager
+	 * fragmentManager = getFragmentManager(); switch (number) { case 1: if
+	 * (board == null) board = (Board) Board.newInstance(3);
+	 * fragmentManager.beginTransaction().replace(R.id.container, board)
+	 * .commit(); mTitle = getString(R.string.title_start_game); break; case 2:
+	 * if (record == null) record = (Records) Records.newInstance();
+	 * fragmentManager.beginTransaction().replace(R.id.container, record)
+	 * .commit(); mTitle = getString(R.string.title_user_information); break;
+	 * case 3: SharedPreferences sharedPref =
+	 * getPreferences(Context.MODE_PRIVATE); String path =
+	 * sharedPref.getString(getString(R.string.path), ""); gallery =
+	 * Gallery.newInstance(path);
+	 * fragmentManager.beginTransaction().replace(R.id.container, gallery)
+	 * .commit(); mTitle = getString(R.string.title_select_image); break;
+	 * 
+	 * } }
+	 */
 
 	public void restoreActionBar() {
 		ActionBar actionBar = getActionBar();
@@ -127,41 +139,33 @@ public class LauncherActivity extends Activity implements
 	/**
 	 * A placeholder fragment containing a simple view.
 	 */
-	public static class PlaceholderFragment extends Fragment {
-		/**
-		 * The fragment argument representing the section number for this
-		 * fragment.
-		 */
-		private static final String ARG_SECTION_NUMBER = "section_number";
-
-		/**
-		 * Returns a new instance of this fragment for the given section number.
-		 */
-		public static PlaceholderFragment newInstance(int sectionNumber) {
-			PlaceholderFragment fragment = new PlaceholderFragment();
-			Bundle args = new Bundle();
-			args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-			fragment.setArguments(args);
-			return fragment;
-		}
-
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_launcher,
-					container, false);
-			return rootView;
-		}
-
-		@Override
-		public void onAttach(Activity activity) {
-			super.onAttach(activity);
-			((LauncherActivity) activity).onSectionAttached(getArguments()
-					.getInt(ARG_SECTION_NUMBER));
-		}
-	}
-
+	/*
+	 * public static class PlaceholderFragment extends Fragment {
+	 *//**
+	 * The fragment argument representing the section number for this
+	 * fragment.
+	 */
+	/*
+	 * private static final String ARG_SECTION_NUMBER = "section_number";
+	 *//**
+	 * Returns a new instance of this fragment for the given section number.
+	 */
+	/*
+	 * public static PlaceholderFragment newInstance(int sectionNumber) {
+	 * PlaceholderFragment fragment = new PlaceholderFragment(); Bundle args =
+	 * new Bundle(); args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+	 * fragment.setArguments(args); return fragment; }
+	 * 
+	 * public PlaceholderFragment() { }
+	 * 
+	 * @Override public View onCreateView(LayoutInflater inflater, ViewGroup
+	 * container, Bundle savedInstanceState) { View rootView =
+	 * inflater.inflate(R.layout.fragment_launcher, container, false); return
+	 * rootView; }
+	 * 
+	 * @Override public void onAttach(Activity activity) {
+	 * super.onAttach(activity); ((LauncherActivity)
+	 * activity).onSectionAttached(getArguments() .getInt(ARG_SECTION_NUMBER));
+	 * } }
+	 */
 }

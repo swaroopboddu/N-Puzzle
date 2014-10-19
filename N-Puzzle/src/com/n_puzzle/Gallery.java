@@ -2,6 +2,8 @@ package com.n_puzzle;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,7 +21,6 @@ import android.widget.ImageView;
 public class Gallery extends Fragment {
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-	private static final String FILE_PATH = "path";
 
 	// TODO: Rename and change types of parameters
 	private String path;
@@ -35,24 +36,26 @@ public class Gallery extends Fragment {
 	 * @return A new instance of fragment Gallery.
 	 */
 	// TODO: Rename and change types and number of parameters
-	public static Gallery newInstance(String path) {
+	public static Gallery newInstance() {
 		Gallery fragment = new Gallery();
 		Bundle args = new Bundle();
-		args.putString(FILE_PATH, path);
+
 		fragment.setArguments(args);
 		return fragment;
 	}
 
 	public Gallery() {
-		// Required empty public constructor
+
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (getArguments() != null) {
-			path = getArguments().getString(FILE_PATH);
-		}
+		SharedPreferences sharedPref = getActivity().getPreferences(
+				Context.MODE_PRIVATE);
+		String path = sharedPref.getString(getString(R.string.path), "");
+
+		this.path = path;
 	}
 
 	@Override
@@ -60,7 +63,7 @@ public class Gallery extends Fragment {
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_gallery, container, false);
 		ImageView image = (ImageView) v.findViewById(R.id.imageView1);
-		if (path != null)
+		if (!path.equals(""))
 			image.setImageBitmap(BitmapFactory.decodeFile(path));
 		return v;
 	}
